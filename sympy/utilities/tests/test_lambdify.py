@@ -135,6 +135,7 @@ def test_number_precision():
     prec = 1e-49  # mpmath precision is around 50 decimal places
     assert -prec < f(0) - sin02 < prec
 
+
 @conserve_mpmath_dps
 def test_mpmath_precision():
     mpmath.mp.dps = 100
@@ -143,7 +144,6 @@ def test_mpmath_precision():
 #================== Test Translations ==============================
 # We can only check if all translated functions are valid. It has to be checked
 # by hand if they are complete.
-
 
 def test_math_transl():
     from sympy.utilities.lambdify import MATH_TRANSLATIONS
@@ -185,6 +185,7 @@ def test_numpy_translation_abs():
     assert f(-1) == 1
     assert f(1) == 1
 
+
 def test_numexpr_printer():
     if not numexpr:
         skip("numexpr not installed.")
@@ -207,6 +208,7 @@ def test_numexpr_printer():
         args = arg_tuple[:nargs]
         f = lambdify(args, ssym(*args), modules='numexpr')
         assert f(*(1, )*nargs) is not None
+
 
 def test_issue_9334():
     if not numexpr:
@@ -321,6 +323,7 @@ def test_matrix():
     assert lambdify(v, J, modules='sympy')(1, 2) == sol
     assert lambdify(v.T, J, modules='sympy')(1, 2) == sol
 
+
 def test_numpy_matrix():
     if not numpy:
         skip("numpy not installed.")
@@ -332,12 +335,14 @@ def test_numpy_matrix():
     #Check that the types are arrays and matrices
     assert isinstance(f(1, 2, 3), numpy.ndarray)
 
+
 def test_numpy_transpose():
     if not numpy:
         skip("numpy not installed.")
     A = Matrix([[1, x], [0, 1]])
     f = lambdify((x), A.T, modules="numpy")
     numpy.testing.assert_array_equal(f(2), numpy.array([[1, 0], [2, 1]]))
+
 
 def test_numpy_dotproduct():
     if not numpy:
@@ -354,12 +359,14 @@ def test_numpy_dotproduct():
            f4(1, 2, 3) == \
            numpy.array([14])
 
+
 def test_numpy_inverse():
     if not numpy:
         skip("numpy not installed.")
     A = Matrix([[1, x], [0, 1]])
     f = lambdify((x), A**-1, modules="numpy")
     numpy.testing.assert_array_equal(f(2), numpy.array([[1, -2], [0,  1]]))
+
 
 def test_numpy_old_matrix():
     if not numpy:
@@ -370,6 +377,7 @@ def test_numpy_old_matrix():
     numpy.testing.assert_allclose(f(1, 2, 3), sol_arr)
     assert isinstance(f(1, 2, 3), numpy.matrix)
 
+
 def test_python_div_zero_issue_11306():
     if not numpy:
         skip("numpy not installed.")
@@ -378,6 +386,7 @@ def test_python_div_zero_issue_11306():
     numpy.seterr(divide='ignore')
     assert str(float(f(0,1))) == 'inf'
     numpy.seterr(divide='warn')
+
 
 def test_issue9474():
     mods = [None, 'math']
@@ -446,6 +455,7 @@ def test_numpy_logical_ops():
     numpy.testing.assert_array_equal(or_func_3(arr1, arr2, arr3), numpy.array([True, True]))
     numpy.testing.assert_array_equal(not_func(arr2), numpy.array([True, False]))
 
+
 def test_numpy_matmul():
     if not numpy:
         skip("numpy not installed.")
@@ -472,6 +482,7 @@ def test_numpy_numexpr():
     nefunc = lambdify((x, y, z), expr, modules='numexpr')
     assert numpy.allclose(npfunc(a, b, c), nefunc(a, b, c))
 
+
 def test_numexpr_userfunctions():
     if not numpy:
         skip("numpy not installed.")
@@ -487,6 +498,7 @@ def test_numexpr_userfunctions():
     func = lambdify((x, y), uf(x, y), modules='numexpr')
     assert numpy.allclose(func(a, b), 2*a*b+1)
 
+
 def test_tensorflow_basic_math():
     if not tensorflow:
         skip("tensorflow not installed.")
@@ -496,6 +508,7 @@ def test_tensorflow_basic_math():
     s = tensorflow.Session()
     assert func(a).eval(session=s) == 0.5
 
+
 def test_tensorflow_placeholders():
     if not tensorflow:
         skip("tensorflow not installed.")
@@ -504,6 +517,7 @@ def test_tensorflow_placeholders():
     a = tensorflow.placeholder(dtype=tensorflow.float32)
     s = tensorflow.Session()
     assert func(a).eval(session=s, feed_dict={a: 0}) == 0.5
+
 
 def test_tensorflow_variables():
     if not tensorflow:
@@ -518,6 +532,7 @@ def test_tensorflow_variables():
         s.run(tensorflow.global_variables_initializer())
     assert func(a).eval(session=s) == 0.5
 
+
 def test_tensorflow_logical_operations():
     if not tensorflow:
         skip("tensorflow not installed.")
@@ -527,6 +542,7 @@ def test_tensorflow_logical_operations():
     b = tensorflow.constant(True)
     s = tensorflow.Session()
     assert func(a, b).eval(session=s) == 0
+
 
 def test_tensorflow_piecewise():
     if not tensorflow:
@@ -539,6 +555,7 @@ def test_tensorflow_piecewise():
     assert func(a).eval(session=s, feed_dict={a: 0}) == 0
     assert func(a).eval(session=s, feed_dict={a: 1}) == 1
 
+
 def test_tensorflow_multi_max():
     if not tensorflow:
         skip("tensorflow not installed.")
@@ -547,6 +564,7 @@ def test_tensorflow_multi_max():
     a = tensorflow.placeholder(dtype=tensorflow.float32)
     s = tensorflow.Session()
     assert func(a).eval(session=s, feed_dict={a: -2}) == 4
+
 
 def test_tensorflow_multi_min():
     if not tensorflow:
@@ -557,6 +575,7 @@ def test_tensorflow_multi_min():
     s = tensorflow.Session()
     assert func(a).eval(session=s, feed_dict={a: -2}) == -2
 
+
 def test_tensorflow_relational():
     if not tensorflow:
         skip("tensorflow not installed.")
@@ -566,13 +585,13 @@ def test_tensorflow_relational():
     s = tensorflow.Session()
     assert func(a).eval(session=s, feed_dict={a: 1})
 
+
 def test_integral():
     f = Lambda(x, exp(-x**2))
     l = lambdify(x, Integral(f(x), (x, -oo, oo)), modules="sympy")
     assert l(x) == Integral(exp(-x**2), (x, -oo, oo))
 
 #================== Test symbolic ==================================
-
 
 def test_sym_single_arg():
     f = lambdify(x, x * y)
@@ -690,6 +709,7 @@ def test_lambdify_imps():
     lam = lambdify(x, f(x), d, use_imps=False)
     assert lam(3) == 102
 
+
 def test_dummification():
     t = symbols('t')
     F = Function('F')
@@ -709,6 +729,7 @@ def test_dummification():
     raises(SyntaxError, lambda: lambdify(F(t) * G(t), F(t) * G(t) + 5))
     raises(SyntaxError, lambda: lambdify(2 * F(t), 2 * F(t) + 5))
     raises(SyntaxError, lambda: lambdify(2 * F(t), 4 * F(t) + 5))
+
 
 def test_python_keywords():
     # Test for issue 7452. The automatic dummification should ensure use of
@@ -769,19 +790,23 @@ def test_special_printers():
     assert isinstance(func1(), mpi)
     assert isinstance(func2(), mpi)
 
+
 def test_true_false():
     # We want exact is comparison here, not just ==
     assert lambdify([], true)() is True
     assert lambdify([], false)() is False
+
 
 def test_issue_2790():
     assert lambdify((x, (y, z)), x + y)(1, (2, 4)) == 3
     assert lambdify((x, (y, (w, z))), w + x + y + z)(1, (2, (3, 4))) == 10
     assert lambdify(x, x + 1, dummify=False)(1) == 2
 
+
 def test_issue_12092():
     f = implemented_function('f', lambda x: x**2)
     assert f(f(2)).evalf() == Float(16)
+
 
 def test_ITE():
     assert lambdify((x, y, z), ITE(x, y, z))(True, 5, 3) == 5
@@ -793,6 +818,7 @@ def test_Min_Max():
     assert lambdify((x, y, z), Min(x, y, z))(1, 2, 3) == 1
     assert lambdify((x, y, z), Max(x, y, z))(1, 2, 3) == 3
 
+
 def test_Indexed():
     # Issue #10934
     if not numpy:
@@ -803,6 +829,7 @@ def test_Indexed():
     b = numpy.array([[1, 2], [3, 4]])
     assert lambdify(a, Sum(a[x, y], (x, 0, 1), (y, 0, 1)))(b) == 10
 
+
 def test_issue_12173():
     #test for issue 12173
     exp1 = lambdify((x, y), uppergamma(x, y),"mpmath")(1, 2)
@@ -810,15 +837,18 @@ def test_issue_12173():
     assert exp1 == uppergamma(1, 2).evalf()
     assert exp2 == lowergamma(1, 2).evalf()
 
+
 def test_issue_13642():
     if not numpy:
         skip("numpy not installed")
     f = lambdify(x, sinc(x))
     assert Abs(f(1) - sinc(1)).n() < 1e-15
 
+
 def test_sinc_mpmath():
     f = lambdify(x, sinc(x), "mpmath")
     assert Abs(f(1) - sinc(1)).n() < 1e-15
+
 
 def test_lambdify_dummy_arg():
     d1 = Dummy()
@@ -829,3 +859,10 @@ def test_lambdify_dummy_arg():
     d2 = Dummy('x')
     f2 = lambdify(d2, d2 + 1)
     assert f2(2) == 3
+
+
+def test_lambdify_Derivative_arg_issue_16468():
+    f = Function('f')
+    f = Function('f')(x)
+    expr = f + f.diff()
+    assert lambdify((f, f.diff()), expr)(10, 5) == 15
